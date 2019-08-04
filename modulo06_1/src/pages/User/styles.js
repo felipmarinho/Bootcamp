@@ -35,6 +35,14 @@ export const Bio = styled.Text`
     text-align: center;
 `;
 
+export const Page = styled.Text`
+    font-size: 14px;
+    line-height: 18px;
+    color: #999;
+    margin-top: 5px;
+    text-align: center;
+`;
+
 export const Stars = styled.FlatList.attrs({
     showsVerticalScrollIndicator: false,
 })`
