@@ -26,6 +26,7 @@ export default class User extends Component {
     static propTypes = {
         navigation: PropTypes.shape({
             getParam: PropTypes.func,
+            navigate: PropTypes.func,
         }).isRequired,
     };
 
@@ -36,27 +37,40 @@ export default class User extends Component {
     };
 
     async componentDidMount() {
-        await this.loadData(0);
+        await this.loadData();
     }
 
     loadMore = async () => {
-        await this.loadData(1);
+        await this.loadData(true);
     };
 
     refreshList = () => {
         const { page } = this.state;
         if (page > 1) {
-            this.loadData(-1);
+            this.loadData(false);
         }
     };
 
-    async loadData(currentPage) {
+    handleNavigate = repository => {
+        const { navigation } = this.props;
+        navigation.navigate('Repository', { repository });
+    };
+
+    async loadData(nextPage) {
         this.setState({ loading: true });
         const { navigation } = this.props;
+        console.tron.log(
+            `loadData - navigation: ${JSON.stringify(navigation)}`
+        );
         let { page } = this.state;
         const user = navigation.getParam('user');
 
-        page += currentPage;
+        if (nextPage !== undefined && nextPage) {
+            page += 1;
+        } else if (nextPage !== undefined) {
+            page -= 1;
+        }
+
         this.setState({ page });
         console.tron.log(`loadData - page: ${page}`);
         const response = await api.get(
@@ -93,7 +107,7 @@ export default class User extends Component {
                         onRefresh={this.refreshList}
                         refreshing={loading}
                         renderItem={({ item }) => (
-                            <Starred>
+                            <Starred onPress={() => this.handleNavigate(item)}>
                                 <OwnerAvatar
                                     source={{ uri: item.owner.avatar_url }}
                                 />
